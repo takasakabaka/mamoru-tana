@@ -4,9 +4,17 @@ import type { ReactNode } from "react";
 import { canUsePaidPlans, isPaidPlanId, paidPlansUnavailableMessage } from "./billing";
 import { categoryMap, createSeedItems, storageKey } from "./data";
 import { daysUntil, isValidDateValue, relativeLabel } from "./date";
+import {
+  disableDueNotificationsForItems,
+  enableDueNotificationsForItems,
+  readDueNotificationState,
+  syncDueNotificationsForItems,
+  writeDueNotificationState,
+} from "./due-notifications";
 import { itemTextLimits, normalizeItems } from "./item-data";
 import { readJson, writeJson } from "./storage";
 import type { Category, ShelfItem } from "./types";
+import type { DueNotificationState } from "./due-notifications";
 
 export type HomeFilter = "soon" | "recall" | "done" | "all";
 export type PlanId = "free" | "plus" | "family";
@@ -41,11 +49,15 @@ type AppState = {
   currentPlan: Plan;
   doneItems: ShelfItem[];
   draftTemplate: DraftItem;
+  dueNotifications: DueNotificationState;
+  disableDueNotifications: () => Promise<void>;
+  enableDueNotifications: () => Promise<void>;
   filterItems: (query: string) => ShelfItem[];
   getHomeItems: (filter: HomeFilter) => ShelfItem[];
   isFamilyPlan: boolean;
   isEasyMode: boolean;
   isPaidPlan: boolean;
+  isSyncingDueNotifications: boolean;
   items: ShelfItem[];
   notice: string;
   plan: PlanId;
@@ -55,6 +67,7 @@ type AppState = {
   setEasyMode: (enabled: boolean) => void;
   setNotice: (notice: string) => void;
   soonItems: ShelfItem[];
+  syncDueNotifications: () => Promise<void>;
   toggleDone: (id: string) => void;
 };
 
@@ -159,6 +172,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return stored === "plus" || stored === "family" ? stored : "free";
   });
   const [isEasyMode, setIsEasyMode] = useState<boolean>(() => readJson<unknown>(easyModeKey, false) === true);
+  const [dueNotifications, setDueNotifications] = useState<DueNotificationState>(() => readDueNotificationState());
+  const [isSyncingDueNotifications, setIsSyncingDueNotifications] = useState(false);
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
@@ -178,6 +193,25 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     writeJson(easyModeKey, isEasyMode);
   }, [isEasyMode]);
+
+  useEffect(() => {
+    writeDueNotificationState(dueNotifications);
+  }, [dueNotifications]);
+
+  useEffect(() => {
+    if (!dueNotifications.enabled || isSyncingDueNotifications) return;
+
+    let cancelled = false;
+    syncDueNotificationsForItems(items).then((nextState) => {
+      if (!cancelled) {
+        setDueNotifications(nextState);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dueNotifications.enabled, isSyncingDueNotifications, items]);
 
   const activeItems = useMemo(() => items.filter((item) => !item.done), [items]);
   const doneItems = useMemo(() => items.filter((item) => item.done), [items]);
@@ -245,6 +279,27 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       currentPlan,
       doneItems,
       draftTemplate,
+      dueNotifications,
+      async disableDueNotifications() {
+        setIsSyncingDueNotifications(true);
+        try {
+          const nextState = await disableDueNotificationsForItems();
+          setDueNotifications(nextState);
+          setNotice("期限通知をオフにしました。");
+        } finally {
+          setIsSyncingDueNotifications(false);
+        }
+      },
+      async enableDueNotifications() {
+        setIsSyncingDueNotifications(true);
+        try {
+          const nextState = await enableDueNotificationsForItems(items);
+          setDueNotifications(nextState);
+          setNotice(nextState.enabled ? "期限通知をオンにしました。" : nextState.lastError ?? "期限通知を有効にできませんでした。");
+        } finally {
+          setIsSyncingDueNotifications(false);
+        }
+      },
       filterItems(query) {
         const normalized = query.trim().toLowerCase();
         return sortByUrgency(items).filter((item) => {
@@ -261,6 +316,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       isEasyMode,
       isFamilyPlan,
       isPaidPlan,
+      isSyncingDueNotifications,
       items,
       notice,
       plan,
@@ -278,12 +334,43 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       },
       setNotice,
       soonItems,
+      async syncDueNotifications() {
+        if (!dueNotifications.enabled) {
+          setNotice("期限通知はオフです。");
+          return;
+        }
+        setIsSyncingDueNotifications(true);
+        try {
+          const nextState = await syncDueNotificationsForItems(items);
+          setDueNotifications(nextState);
+          setNotice(nextState.enabled ? "期限通知を再設定しました。" : nextState.lastError ?? "期限通知を再設定できませんでした。");
+        } finally {
+          setIsSyncingDueNotifications(false);
+        }
+      },
       toggleDone(id) {
         tapLight();
         setItems((current) => current.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
       },
     }),
-    [activeItems, arePaidPlansEnabled, canAddMore, currentPlan, doneItems, isEasyMode, isFamilyPlan, isPaidPlan, items, notice, plan, recallItems, remainingFreeItems, soonItems],
+    [
+      activeItems,
+      arePaidPlansEnabled,
+      canAddMore,
+      currentPlan,
+      doneItems,
+      dueNotifications,
+      isEasyMode,
+      isFamilyPlan,
+      isPaidPlan,
+      isSyncingDueNotifications,
+      items,
+      notice,
+      plan,
+      recallItems,
+      remainingFreeItems,
+      soonItems,
+    ],
   );
 
   return <StateContext.Provider value={value}>{children}</StateContext.Provider>;

@@ -4,10 +4,11 @@
 
 - Expo SDK 56系へ更新済み
 - `npm run release:check:node20` 通過済み
-- Androidの不要権限なし
+- Androidの不要権限なし（期限通知はユーザー許可時のみ）
 - EAS本番ビルド用 `eas.json` 追加済み
 - 未接続のPlus/Familyを有効化できないよう制限済み
 - 端末内保存データの正規化と入力上限チェック済み
+- 期限通知は端末内ローカル通知として実装済み
 - 防災キット不足チェックとすぐ追加テンプレートは端末内処理のみ
 - プライバシーポリシーと利用規約の原稿追加済み
 - GitHub Pages公開用の `privacy.html`、`terms.html`、`support.html` 追加済み

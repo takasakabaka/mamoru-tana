@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import type { ComponentType } from "react";
-import { Crown, Lock, RotateCcw, ShieldCheck, Users } from "lucide-react-native";
+import { BellRing, Crown, Lock, RefreshCw, RotateCcw, ShieldCheck, Users } from "lucide-react-native";
 import { freeItemLimit, plans, useAppState } from "@/src/app-state";
 import { paidPlansUnavailableMessage } from "@/src/billing";
 import { ActionButton, NoticeBar, Screen, SectionHeader } from "@/src/components";
+import { formatNotificationStatus } from "@/src/due-notifications";
 import { colors, radius, shadows } from "@/src/theme";
 import type { PlanId } from "@/src/app-state";
 
@@ -13,15 +14,20 @@ export default function SettingsScreen() {
     arePaidPlansEnabled,
     choosePlan,
     currentPlan,
+    disableDueNotifications,
+    dueNotifications,
+    enableDueNotifications,
     isEasyMode,
     isFamilyPlan,
     isPaidPlan,
+    isSyncingDueNotifications,
     items,
     notice,
     plan,
     resetDemo,
     setEasyMode,
     setNotice,
+    syncDueNotifications,
   } = useAppState();
   const [resetArmed, setResetArmed] = useState(false);
 
@@ -63,6 +69,53 @@ export default function SettingsScreen() {
         <View style={styles.currentBadge}>
           <Text style={styles.currentBadgeText}>利用中</Text>
         </View>
+      </View>
+
+      <View style={styles.panel}>
+        <SectionHeader title="期限通知" />
+        <View style={styles.notificationRow}>
+          <View style={styles.notificationIcon}>
+            <BellRing color={colors.blue} size={25} strokeWidth={2.4} />
+          </View>
+          <View style={styles.notificationCopy}>
+            <Text selectable style={styles.notificationTitle}>
+              期限が近い日に知らせる
+            </Text>
+            <Text selectable style={styles.notificationText}>
+              各アイテムの通知日数に合わせて、朝9時に端末通知を予約します。
+            </Text>
+          </View>
+          <Switch
+            value={dueNotifications.enabled}
+            disabled={isSyncingDueNotifications}
+            onValueChange={(enabled) => {
+              if (enabled) {
+                void enableDueNotifications();
+              } else {
+                void disableDueNotifications();
+              }
+            }}
+            trackColor={{ false: colors.lineStrong, true: colors.blueSoft }}
+            thumbColor={dueNotifications.enabled ? colors.blue : "#fff"}
+          />
+        </View>
+        <Text selectable style={styles.helpText}>
+          {formatNotificationStatus(dueNotifications)}
+        </Text>
+        {dueNotifications.lastError ? (
+          <Text selectable style={styles.warningText}>
+            {dueNotifications.lastError}
+          </Text>
+        ) : null}
+        <ActionButton
+          label={isSyncingDueNotifications ? "再設定中" : "通知を再設定"}
+          icon={RefreshCw}
+          onPress={() => {
+            void syncDueNotifications();
+          }}
+          variant="secondary"
+          disabled={!dueNotifications.enabled || isSyncingDueNotifications}
+        />
       </View>
 
       <View style={styles.panel}>
@@ -286,6 +339,42 @@ const styles = StyleSheet.create({
     gap: 14,
     padding: 14,
   },
+  notificationRow: {
+    alignItems: "center",
+    backgroundColor: colors.blueSoft,
+    borderColor: "#c9e2ff",
+    borderRadius: radius.md,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 13,
+    minHeight: 88,
+    padding: 14,
+  },
+  notificationIcon: {
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: 15,
+    height: 50,
+    justifyContent: "center",
+    width: 50,
+  },
+  notificationCopy: {
+    flex: 1,
+    gap: 4,
+    minWidth: 0,
+  },
+  notificationTitle: {
+    color: colors.ink,
+    fontSize: 16,
+    fontWeight: "900",
+    lineHeight: 22,
+  },
+  notificationText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 19,
+  },
   easyModeRow: {
     alignItems: "center",
     backgroundColor: colors.greenSoft,
@@ -410,6 +499,12 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 13,
     fontWeight: "700",
+    lineHeight: 20,
+  },
+  warningText: {
+    color: colors.red,
+    fontSize: 13,
+    fontWeight: "800",
     lineHeight: 20,
   },
   noteCard: {
