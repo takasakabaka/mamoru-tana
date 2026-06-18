@@ -59,7 +59,7 @@ export default function ListScreen() {
             一覧
           </Text>
           <Text selectable style={styles.subTitle}>
-            Free残り {remainingFreeItems}件
+            Free未完了枠 残り{remainingFreeItems}件
           </Text>
         </View>
       </View>

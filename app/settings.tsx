@@ -12,6 +12,7 @@ import type { PlanId } from "@/src/app-state";
 export default function SettingsScreen() {
   const {
     arePaidPlansEnabled,
+    activeItems,
     choosePlan,
     currentPlan,
     disableDueNotifications,
@@ -21,7 +22,6 @@ export default function SettingsScreen() {
     isFamilyPlan,
     isPaidPlan,
     isSyncingDueNotifications,
-    items,
     notice,
     plan,
     resetDemo,
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
           <View style={styles.panel}>
             <SectionHeader title="機能" />
             <View style={styles.featureGrid}>
-              <FeatureCard icon={ShieldCheck} title="登録数" value={isPaidPlan ? "無制限" : `${items.length}/${freeItemLimit}`} active={isPaidPlan} />
+              <FeatureCard icon={ShieldCheck} title="未完了枠" value={isPaidPlan ? "無制限" : `${activeItems.length}/${freeItemLimit}`} active={isPaidPlan} />
               <FeatureCard icon={Users} title="家族共有" value={isFamilyPlan ? "有効" : "準備中"} active={isFamilyPlan} />
             </View>
           </View>

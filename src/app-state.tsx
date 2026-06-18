@@ -81,8 +81,8 @@ export const plans: Plan[] = [
     name: "Free",
     price: "0円",
     description: "まずは家の期限を試す",
-    limitLabel: "15件まで",
-    features: ["端末保存", "今日やること", "安全チェック"],
+    limitLabel: "未完了15件まで",
+    features: ["端末保存", "今日やること", "完了分は枠外"],
   },
   {
     id: "plus",
@@ -220,8 +220,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const currentPlan = plans.find((entry) => entry.id === plan) ?? plans[0];
   const isPaidPlan = arePaidPlansEnabled && plan !== "free";
   const isFamilyPlan = arePaidPlansEnabled && plan === "family";
-  const remainingFreeItems = Math.max(freeItemLimit - items.length, 0);
-  const canAddMore = isPaidPlan || items.length < freeItemLimit;
+  const remainingFreeItems = Math.max(freeItemLimit - activeItems.length, 0);
+  const canAddMore = isPaidPlan || activeItems.length < freeItemLimit;
 
   const value = useMemo<AppState>(
     () => ({
@@ -237,7 +237,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           return false;
         }
         if (!canAddMore) {
-          setNotice("無料プランは15件までです。Plusにすると登録数を気にせず使えます。");
+          setNotice("無料プランは未完了15件までです。完了にすると枠が空きます。");
           return false;
         }
         const reminderDays = Math.max(1, Math.min(3650, Math.floor(Number.isFinite(draft.reminderDays) ? draft.reminderDays : 7)));
