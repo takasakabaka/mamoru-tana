@@ -31,7 +31,7 @@ export function EasyHome() {
       <NoticeBar message={notice} onClose={() => setNotice("")} />
 
       <View style={styles.hero}>
-        <Mascot />
+        <Mascot mood={safetyCount ? "boxWarning" : "wave"} size={100} />
         <View style={styles.heroCopy}>
           <Text selectable style={styles.eyebrow}>
             かんたんモード
@@ -64,6 +64,7 @@ export function EasyHome() {
       </View>
 
       <View style={styles.ruleCard}>
+        <Mascot mood="search" size={72} />
         <Text selectable style={styles.ruleText}>
           あかいカードは おとなの人に みせる
         </Text>
@@ -153,8 +154,8 @@ function AdultCheckModal({ item, onClose, onConfirm }: { item: ShelfItem | null;
     <Modal animationType="fade" transparent visible onRequestClose={onClose}>
       <View style={styles.modalBackdrop}>
         <View style={styles.adultSheet}>
-          <View style={styles.adultIcon}>
-            <AlertTriangle color="#fff" size={32} strokeWidth={2.6} />
+          <View style={styles.adultMascotWrap}>
+            <Mascot mood="alert" size={104} />
           </View>
           <Text selectable style={styles.adultTitle}>
             おとなの人へ
@@ -266,18 +267,21 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   ruleCard: {
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
     padding: 16,
   },
   ruleText: {
     color: colors.ink,
+    flex: 1,
     fontSize: 18,
     fontWeight: "900",
     lineHeight: 26,
-    textAlign: "center",
   },
   taskStack: {
     gap: 14,
@@ -385,14 +389,9 @@ const styles = StyleSheet.create({
     padding: 20,
     width: "100%",
   },
-  adultIcon: {
+  adultMascotWrap: {
     alignItems: "center",
-    alignSelf: "center",
-    backgroundColor: colors.red,
-    borderRadius: 999,
-    height: 62,
     justifyContent: "center",
-    width: 62,
   },
   adultTitle: {
     color: colors.ink,

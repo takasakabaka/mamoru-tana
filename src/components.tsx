@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Pressable, ScrollView, StyleProp, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from "react-native";
+import { Image, Pressable, ScrollView, StyleProp, StyleSheet, Text, useWindowDimensions, View, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AlertTriangle,
@@ -17,7 +17,9 @@ import {
 import { categoryMap } from "./data";
 import { daysUntil, formatShortDate } from "./date";
 import { statusLabel } from "./app-state";
+import { catMascotImages } from "./mascot-assets";
 import { colors, radius, shadows } from "./theme";
+import type { CatMascotMood } from "./mascot-assets";
 import type { Category, ShelfItem } from "./types";
 
 type IconComponent = React.ComponentType<{ color?: string; size?: number; strokeWidth?: number }>;
@@ -307,19 +309,10 @@ export function EmptyState({ title, detail }: { title: string; detail?: string }
   );
 }
 
-export function Mascot() {
+export function Mascot({ mood = "wave", size = 96 }: { mood?: CatMascotMood; size?: number }) {
   return (
-    <View style={styles.mascotWrap} accessibilityLabel="まもる棚の案内キャラクター">
-      <View style={styles.mascotHair} />
-      <View style={styles.mascotHead}>
-        <View style={styles.mascotEyeLeft} />
-        <View style={styles.mascotEyeRight} />
-        <View style={styles.mascotSmile} />
-      </View>
-      <View style={styles.mascotBody}>
-        <View style={styles.mascotApron} />
-      </View>
-      <View style={styles.mascotHand} />
+    <View style={[styles.mascotWrap, { height: size, width: size }]} accessibilityLabel="まもる棚の案内ねこ">
+      <Image accessibilityIgnoresInvertColors resizeMode="contain" source={catMascotImages[mood]} style={styles.mascotImage} />
     </View>
   );
 }
@@ -659,89 +652,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   mascotWrap: {
-    height: 96,
-    position: "relative",
-    width: 88,
-  },
-  mascotHair: {
-    backgroundColor: "#6a4734",
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    height: 54,
-    left: 19,
-    position: "absolute",
-    top: 0,
-    width: 50,
-  },
-  mascotHead: {
     alignItems: "center",
-    backgroundColor: "#ffe3ce",
-    borderColor: "#f2c7aa",
-    borderRadius: 26,
-    borderWidth: 1,
-    height: 48,
-    left: 20,
-    position: "absolute",
-    top: 9,
-    width: 48,
+    justifyContent: "center",
+    overflow: "visible",
   },
-  mascotEyeLeft: {
-    backgroundColor: colors.ink,
-    borderRadius: 999,
-    height: 4,
-    left: 14,
-    position: "absolute",
-    top: 21,
-    width: 4,
-  },
-  mascotEyeRight: {
-    backgroundColor: colors.ink,
-    borderRadius: 999,
-    height: 4,
-    position: "absolute",
-    right: 14,
-    top: 21,
-    width: 4,
-  },
-  mascotSmile: {
-    borderBottomColor: "#c46f5f",
-    borderBottomWidth: 2,
-    borderRadius: 10,
-    height: 10,
-    position: "absolute",
-    top: 27,
-    width: 18,
-  },
-  mascotBody: {
-    backgroundColor: "#fff",
-    borderColor: colors.lineStrong,
-    borderRadius: 16,
-    borderWidth: 1,
-    height: 44,
-    left: 23,
-    position: "absolute",
-    top: 50,
-    width: 42,
-  },
-  mascotApron: {
-    backgroundColor: colors.yellow,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    height: 31,
-    left: 8,
-    position: "absolute",
-    top: 8,
-    width: 26,
-  },
-  mascotHand: {
-    backgroundColor: "#ffe3ce",
-    borderColor: "#f2c7aa",
-    borderRadius: 999,
-    borderWidth: 1,
-    height: 19,
-    position: "absolute",
-    right: 2,
-    top: 38,
-    width: 19,
+  mascotImage: {
+    height: "100%",
+    width: "100%",
   },
 });

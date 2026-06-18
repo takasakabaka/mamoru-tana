@@ -56,7 +56,7 @@ export default function HomeScreen() {
       <NoticeBar message={notice} onClose={() => setNotice("")} />
 
       <View style={styles.hero}>
-        <Mascot />
+        <Mascot mood={recallItems.length ? "search" : "wave"} size={100} />
         <View style={styles.heroText}>
           <Text selectable adjustsFontSizeToFit minimumFontScale={0.86} numberOfLines={1} style={styles.heroTitle}>
             おかえりなさい！
