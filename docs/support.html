@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>まもる棚 サポート</title>
+    <link rel="stylesheet" href="./site.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="top">
+        <div class="brand">まもる棚</div>
+        <nav class="nav" aria-label="関連ページ">
+          <a href="./index.html">トップ</a>
+          <a href="./privacy.html">プライバシーポリシー</a>
+          <a href="./terms.html">利用規約</a>
+        </nav>
+      </header>
+
+      <article class="card">
+        <span class="badge">Support</span>
+        <h1>まもる棚 サポート</h1>
+        <p>最終更新日: 2026-06-18</p>
+
+        <h2>よくある質問</h2>
+        <p><strong>Q. データはどこに保存されますか。</strong><br />現在は利用者の端末内に保存されます。</p>
+        <p><strong>Q. 機種変更の前に何をすればいいですか。</strong><br />設定画面からバックアップJSONを作成し、新しい端末で復元してください。</p>
+        <p><strong>Q. Plus/Familyは使えますか。</strong><br />現在は無料公開モードです。アプリ内課金の接続後に提供予定です。</p>
+        <p><strong>Q. 子どもだけで使わせても大丈夫ですか。</strong><br />かんたんモードは見やすさのための機能です。食品、防災用品、薬などの最終確認は大人が行ってください。</p>
+
+        <h2>不具合や要望</h2>
+        <p>
+          不具合や要望を送る場合は、ストア掲載ページの開発者連絡先、または公開元GitHubリポジトリのIssuesをご利用ください。
+          個人情報、住所、電話番号、健康情報などは書き込まないでください。
+        </p>
+        <p>
+          <a id="issues-link" href="https://github.com/" rel="noopener">GitHub Issuesを開く</a>
+        </p>
+        <p id="issues-note" class="notice">
+          このページをGitHub Pagesで公開すると、GitHub Issuesへのリンクが自動で設定されます。
+        </p>
+
+        <h2>データ削除</h2>
+        <p>
+          現在のアプリはアカウントを作成せず、データは端末内に保存されます。アプリ内のデータを消したい場合は、端末のアプリ削除、またはアプリ内のデモリセットとバックアップ管理を利用してください。
+        </p>
+
+        <h2>関連ページ</h2>
+        <ul class="list">
+          <li><a href="./privacy.html">プライバシーポリシー</a></li>
+          <li><a href="./terms.html">利用規約</a></li>
+        </ul>
+      </article>
+    </main>
+    <script>
+      (function () {
+        var host = window.location.hostname;
+        var path = window.location.pathname.split("/").filter(Boolean);
+        var link = document.getElementById("issues-link");
+        var note = document.getElementById("issues-note");
+        if (!link || !note || !host.endsWith(".github.io") || path.length === 0) return;
+        var user = host.replace(".github.io", "");
+        var repo = path[0];
+        link.href = "https://github.com/" + encodeURIComponent(user) + "/" + encodeURIComponent(repo) + "/issues";
+        note.textContent = "個人情報を書かずに、不具合の状況、端末名、OS、アプリのバージョンを記載してください。";
+      })();
+    </script>
+  </body>
+</html>
