@@ -38,6 +38,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b1b3410f-dba1-414b-9d5b-6f1b91e48e99"
+      }
+    },
+    "owner": "zoom1205"
   }
 }
