@@ -25,7 +25,7 @@ export default function ScheduleScreen() {
     const date = addDays(index);
     return {
       date,
-      label: index === 0 ? "今日" : index === 1 ? "明日" : formatShortDate(date),
+      label: index === 0 ? "今日" : index === 1 ? "明日" : `${index}日後`,
       items: sortedItems.filter((item) => item.dueDate === date),
     };
   });

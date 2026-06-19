@@ -97,15 +97,17 @@ export default function SettingsScreen() {
             {dueNotifications.lastError}
           </Text>
         ) : null}
-        <ActionButton
-          label={isSyncingDueNotifications ? "再設定中" : "通知を再設定"}
-          icon={RefreshCw}
-          onPress={() => {
-            void syncDueNotifications();
-          }}
-          variant="secondary"
-          disabled={!dueNotifications.enabled || isSyncingDueNotifications}
-        />
+        {dueNotifications.enabled || dueNotifications.lastError ? (
+          <ActionButton
+            label={isSyncingDueNotifications ? "再設定中" : "通知を再設定"}
+            icon={RefreshCw}
+            onPress={() => {
+              void syncDueNotifications();
+            }}
+            variant="secondary"
+            disabled={!dueNotifications.enabled || isSyncingDueNotifications}
+          />
+        ) : null}
 
         <View style={[styles.premiumNotificationBox, isPaidPlan ? styles.premiumNotificationBoxActive : null]}>
           <View style={styles.premiumNotificationHeader}>

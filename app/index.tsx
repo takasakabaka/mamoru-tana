@@ -88,9 +88,9 @@ export default function HomeScreen() {
           </View>
           <View style={styles.onboardingSteps}>
             {[
-              { number: "1", title: "一覧で追加", text: "すぐ追加か手入力で登録します。" },
-              { number: "2", title: "期限を決める", text: "日付と通知日数を入れます。" },
-              { number: "3", title: "確認したら完了", text: "終わったものはFree枠を使いません。" },
+              { number: "1", title: "追加", text: "名前かテンプレで登録" },
+              { number: "2", title: "期限", text: "日付を入れる" },
+              { number: "3", title: "完了", text: "終わったら完了" },
             ].map((step) => (
               <View key={step.number} style={styles.onboardingStep}>
                 <View style={styles.onboardingStepBadge}>
@@ -162,7 +162,7 @@ export default function HomeScreen() {
         </Text>
         {emergencyKit.missing.length ? (
           <View style={styles.kitChipRow}>
-            {emergencyKit.missing.slice(0, 4).map((template) => (
+            {emergencyKit.missing.slice(0, 3).map((template) => (
               <Pressable accessibilityRole="button" key={template.id} onPress={() => addEmergencyTemplate(template)} style={styles.kitChip}>
                 <Text style={styles.kitChipText}>＋ {template.label}</Text>
               </Pressable>
@@ -319,8 +319,8 @@ const styles = StyleSheet.create({
     borderColor: "#c9e2ff",
     borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 14,
-    padding: 14,
+    gap: 12,
+    padding: 12,
   },
   onboardingHeader: {
     alignItems: "center",
@@ -352,30 +352,31 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   onboardingSteps: {
-    gap: 9,
+    flexDirection: "row",
+    gap: 8,
   },
   onboardingStep: {
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: colors.blueSoft,
     borderColor: "#d6e9ff",
     borderRadius: radius.md,
     borderWidth: 1,
-    flexDirection: "row",
-    gap: 10,
-    minHeight: 58,
-    padding: 10,
+    flex: 1,
+    gap: 7,
+    minHeight: 92,
+    padding: 9,
   },
   onboardingStepBadge: {
     alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: 999,
-    height: 34,
+    height: 28,
     justifyContent: "center",
-    width: 34,
+    width: 28,
   },
   onboardingStepBadgeText: {
     color: colors.blue,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "900",
   },
   onboardingStepBody: {
@@ -384,16 +385,15 @@ const styles = StyleSheet.create({
   },
   onboardingStepTitle: {
     color: colors.ink,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "900",
-    lineHeight: 20,
+    lineHeight: 17,
   },
   onboardingStepText: {
     color: colors.muted,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
-    lineHeight: 17,
-    marginTop: 2,
+    lineHeight: 15,
   },
   onboardingActions: {
     flexDirection: "row",
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     flex: 1,
     justifyContent: "center",
-    minHeight: 48,
+    minHeight: 46,
     paddingHorizontal: 12,
   },
   onboardingSecondary: {
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     justifyContent: "center",
-    minHeight: 48,
+    minHeight: 46,
     minWidth: 86,
     paddingHorizontal: 12,
   },

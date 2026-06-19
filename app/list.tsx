@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import { Plus, Search } from "lucide-react-native";
 import { useAppState } from "@/src/app-state";
 import { categories } from "@/src/data";
@@ -79,7 +79,7 @@ export default function ListScreen() {
         />
       </View>
 
-      <View style={styles.categoryRow}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryRow}>
         <Pressable accessibilityRole="button" onPress={() => setCategory("all")} style={[styles.categoryChip, category === "all" ? styles.categoryChipActive : null]}>
           <Text style={[styles.categoryChipText, category === "all" ? styles.categoryChipTextActive : null]}>すべて</Text>
         </Pressable>
@@ -94,7 +94,7 @@ export default function ListScreen() {
             <Text style={[styles.categoryChipText, category === entry.id ? styles.categoryChipTextActive : null]}>{entry.shortLabel}</Text>
           </Pressable>
         ))}
-      </View>
+      </ScrollView>
 
       <ActionButton label={showForm ? "入力を閉じる" : "新しく追加する"} icon={Plus} onPress={() => setShowForm((current) => !current)} variant={showForm ? "secondary" : "primary"} />
 
@@ -265,8 +265,8 @@ const styles = StyleSheet.create({
   },
   categoryRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 8,
+    paddingRight: 18,
   },
   categoryChip: {
     alignItems: "center",
