@@ -26,6 +26,7 @@ export default function ListScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [draft, setDraft] = useState({ ...draftTemplate, dueDate: addDays(7) });
+  const [showForm, setShowForm] = useState(false);
 
   const results = useMemo(() => {
     return filterItems(query).filter((item) => category === "all" || item.category === category);
@@ -35,6 +36,7 @@ export default function ListScreen() {
     const saved = addItem(draft);
     if (saved) {
       setDraft({ ...draftTemplate, dueDate: addDays(7) });
+      setShowForm(false);
     }
   }
 
@@ -42,6 +44,7 @@ export default function ListScreen() {
     const saved = addItem(makeTemplateDraft(template));
     if (saved) {
       setNotice(`${template.label}を追加しました。`);
+      setShowForm(false);
     }
   }
 
@@ -93,113 +96,117 @@ export default function ListScreen() {
         ))}
       </View>
 
-      <View style={styles.formCard}>
-        <SectionHeader title="新しく追加" />
-        <View style={styles.quickPanel}>
-          <Text selectable style={styles.quickTitle}>
-            すぐ追加
-          </Text>
-          <View style={styles.quickChipRow}>
-            {quickAddTemplates.map((template) => (
-              <Pressable accessibilityRole="button" key={template.id} onPress={() => quickAdd(template)} style={styles.quickChip}>
-                <Text style={styles.quickChipText}>{template.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-        <View style={styles.inputStack}>
-          <TextInput
-            value={draft.name}
-            onChangeText={(name) => setDraft((current) => ({ ...current, name }))}
-            placeholder="アイテム名"
-            placeholderTextColor={colors.muted}
-            maxLength={itemTextLimits.name}
-            style={styles.input}
-          />
-          <TextInput
-            value={draft.place}
-            onChangeText={(place) => setDraft((current) => ({ ...current, place }))}
-            placeholder="置き場所"
-            placeholderTextColor={colors.muted}
-            maxLength={itemTextLimits.place}
-            style={styles.input}
-          />
-          <View style={styles.doubleRow}>
-            <TextInput
-              value={draft.dueDate}
-              onChangeText={(dueDate) => setDraft((current) => ({ ...current, dueDate }))}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.muted}
-              autoCapitalize="none"
-              keyboardType="numbers-and-punctuation"
-              maxLength={10}
-              style={[styles.input, styles.flexInput]}
-            />
-            <TextInput
-              value={String(draft.reminderDays)}
-              onChangeText={(value) => setDraft((current) => ({ ...current, reminderDays: Number(value.replace(/\D/g, "")) || 1 }))}
-              keyboardType="number-pad"
-              placeholder="通知日数"
-              placeholderTextColor={colors.muted}
-              maxLength={4}
-              style={[styles.input, styles.smallInput]}
-            />
-          </View>
-          <View style={styles.datePresetRow}>
-            {datePresets.map((preset) => (
-              <Pressable
-                accessibilityRole="button"
-                key={preset.label}
-                onPress={() => setDraft((current) => ({ ...current, dueDate: addDays(preset.days) }))}
-                style={styles.datePresetButton}
-              >
-                <Text style={styles.datePresetText}>{preset.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text selectable style={styles.inputHelp}>
-            期限は YYYY-MM-DD 形式。迷ったら上のボタンで選べます。
-          </Text>
-          <View style={styles.categoryPicker}>
-            {categories.map((entry) => (
-              <Pressable
-                accessibilityRole="button"
-                key={entry.id}
-                onPress={() => setDraft((current) => ({ ...current, category: entry.id }))}
-                style={[styles.pickChip, draft.category === entry.id ? styles.pickChipActive : null]}
-              >
-                <Text style={[styles.pickChipText, draft.category === entry.id ? styles.pickChipTextActive : null]}>{entry.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <TextInput
-            value={draft.notes}
-            onChangeText={(notes) => setDraft((current) => ({ ...current, notes }))}
-            placeholder="メモ"
-            placeholderTextColor={colors.muted}
-            maxLength={itemTextLimits.notes}
-            style={[styles.input, styles.memoInput]}
-            multiline
-          />
-          <View style={styles.switchRow}>
-            <View>
-              <Text selectable style={styles.switchTitle}>
-                安全チェック
-              </Text>
-              <Text selectable style={styles.switchMeta}>
-                安全チェックに出す
-              </Text>
+      <ActionButton label={showForm ? "入力を閉じる" : "新しく追加する"} icon={Plus} onPress={() => setShowForm((current) => !current)} variant={showForm ? "secondary" : "primary"} />
+
+      {showForm ? (
+        <View style={styles.formCard}>
+          <SectionHeader title="追加内容" />
+          <View style={styles.quickPanel}>
+            <Text selectable style={styles.quickTitle}>
+              すぐ追加
+            </Text>
+            <View style={styles.quickChipRow}>
+              {quickAddTemplates.map((template) => (
+                <Pressable accessibilityRole="button" key={template.id} onPress={() => quickAdd(template)} style={styles.quickChip}>
+                  <Text style={styles.quickChipText}>{template.label}</Text>
+                </Pressable>
+              ))}
             </View>
-            <Switch
-              value={draft.recallWatch}
-              onValueChange={(recallWatch) => setDraft((current) => ({ ...current, recallWatch }))}
-              trackColor={{ false: colors.lineStrong, true: colors.redSoft }}
-              thumbColor={draft.recallWatch ? colors.red : "#fff"}
-            />
           </View>
+          <View style={styles.inputStack}>
+            <TextInput
+              value={draft.name}
+              onChangeText={(name) => setDraft((current) => ({ ...current, name }))}
+              placeholder="アイテム名"
+              placeholderTextColor={colors.muted}
+              maxLength={itemTextLimits.name}
+              style={styles.input}
+            />
+            <TextInput
+              value={draft.place}
+              onChangeText={(place) => setDraft((current) => ({ ...current, place }))}
+              placeholder="置き場所"
+              placeholderTextColor={colors.muted}
+              maxLength={itemTextLimits.place}
+              style={styles.input}
+            />
+            <View style={styles.doubleRow}>
+              <TextInput
+                value={draft.dueDate}
+                onChangeText={(dueDate) => setDraft((current) => ({ ...current, dueDate }))}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor={colors.muted}
+                autoCapitalize="none"
+                keyboardType="numbers-and-punctuation"
+                maxLength={10}
+                style={[styles.input, styles.flexInput]}
+              />
+              <TextInput
+                value={String(draft.reminderDays)}
+                onChangeText={(value) => setDraft((current) => ({ ...current, reminderDays: Number(value.replace(/\D/g, "")) || 1 }))}
+                keyboardType="number-pad"
+                placeholder="通知日数"
+                placeholderTextColor={colors.muted}
+                maxLength={4}
+                style={[styles.input, styles.smallInput]}
+              />
+            </View>
+            <View style={styles.datePresetRow}>
+              {datePresets.map((preset) => (
+                <Pressable
+                  accessibilityRole="button"
+                  key={preset.label}
+                  onPress={() => setDraft((current) => ({ ...current, dueDate: addDays(preset.days) }))}
+                  style={styles.datePresetButton}
+                >
+                  <Text style={styles.datePresetText}>{preset.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text selectable style={styles.inputHelp}>
+              日付に迷ったら上のボタンで選べます。
+            </Text>
+            <View style={styles.categoryPicker}>
+              {categories.map((entry) => (
+                <Pressable
+                  accessibilityRole="button"
+                  key={entry.id}
+                  onPress={() => setDraft((current) => ({ ...current, category: entry.id }))}
+                  style={[styles.pickChip, draft.category === entry.id ? styles.pickChipActive : null]}
+                >
+                  <Text style={[styles.pickChipText, draft.category === entry.id ? styles.pickChipTextActive : null]}>{entry.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+            <TextInput
+              value={draft.notes}
+              onChangeText={(notes) => setDraft((current) => ({ ...current, notes }))}
+              placeholder="メモ"
+              placeholderTextColor={colors.muted}
+              maxLength={itemTextLimits.notes}
+              style={[styles.input, styles.memoInput]}
+              multiline
+            />
+            <View style={styles.switchRow}>
+              <View style={styles.switchCopy}>
+                <Text selectable style={styles.switchTitle}>
+                  安全チェック
+                </Text>
+                <Text selectable style={styles.switchMeta}>
+                  大人の確認が必要なもの
+                </Text>
+              </View>
+              <Switch
+                value={draft.recallWatch}
+                onValueChange={(recallWatch) => setDraft((current) => ({ ...current, recallWatch }))}
+                trackColor={{ false: colors.lineStrong, true: colors.redSoft }}
+                thumbColor={draft.recallWatch ? colors.red : "#fff"}
+              />
+            </View>
+          </View>
+          <ActionButton label={canAddMore ? "追加する" : "Plusで追加"} icon={Plus} onPress={submit} />
         </View>
-        <ActionButton label={canAddMore ? "追加する" : "Plusで追加"} icon={Plus} onPress={submit} />
-      </View>
+      ) : null}
 
       <View style={styles.listPanel}>
         <SectionHeader title={`アイテム（${results.length}件）`} />
@@ -227,7 +234,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.ink,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "900",
     letterSpacing: 0,
   },
@@ -290,8 +297,8 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 14,
-    padding: 14,
+    gap: 12,
+    padding: 12,
   },
   inputStack: {
     gap: 10,
@@ -301,8 +308,8 @@ const styles = StyleSheet.create({
     borderColor: "#ffdba3",
     borderRadius: radius.md,
     borderWidth: 1,
-    gap: 10,
-    padding: 12,
+    gap: 9,
+    padding: 11,
   },
   quickTitle: {
     color: colors.ink,
@@ -321,7 +328,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     justifyContent: "center",
-    minHeight: 38,
+    minHeight: 36,
     paddingHorizontal: 12,
   },
   quickChipText: {
@@ -337,7 +344,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: 15,
     fontWeight: "700",
-    minHeight: 50,
+    minHeight: 48,
     paddingHorizontal: 14,
   },
   doubleRow: {
@@ -364,7 +371,7 @@ const styles = StyleSheet.create({
     borderColor: "#c9e2ff",
     borderRadius: 999,
     borderWidth: 1,
-    minHeight: 38,
+    minHeight: 36,
     justifyContent: "center",
     paddingHorizontal: 14,
   },
@@ -390,7 +397,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lineStrong,
     borderRadius: 999,
     borderWidth: 1,
-    minHeight: 38,
+    minHeight: 36,
     justifyContent: "center",
     paddingHorizontal: 12,
   },
@@ -422,6 +429,11 @@ const styles = StyleSheet.create({
     minHeight: 62,
     paddingHorizontal: 14,
   },
+  switchCopy: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 10,
+  },
   switchTitle: {
     color: colors.ink,
     fontSize: 15,
@@ -439,8 +451,8 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 14,
-    padding: 14,
+    gap: 12,
+    padding: 12,
   },
   itemStack: {
     gap: 10,

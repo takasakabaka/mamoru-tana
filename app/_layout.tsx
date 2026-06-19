@@ -63,10 +63,10 @@ const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: colors.surface,
     borderTopColor: colors.lineStrong,
-    minHeight: 78,
+    minHeight: 72,
     overflow: "hidden",
-    paddingBottom: 10,
-    paddingTop: 8,
+    paddingBottom: 8,
+    paddingTop: 7,
     width: "100%",
   },
   tabItem: {
@@ -78,16 +78,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   tabLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "800",
     letterSpacing: 0,
   },
   iconWrap: {
     alignItems: "center",
     borderRadius: 12,
-    height: 32,
+    height: 30,
     justifyContent: "center",
-    width: 42,
+    width: 40,
   },
   iconWrapActive: {
     backgroundColor: colors.blueSoft,

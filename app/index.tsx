@@ -65,7 +65,8 @@ export default function HomeScreen() {
     return <EasyHome />;
   }
 
-  const stackSummary = width < 620;
+  const compactHome = width < 430;
+  const stackSummary = width < 340;
 
   return (
     <Screen>
@@ -118,7 +119,7 @@ export default function HomeScreen() {
       ) : null}
 
       <View style={styles.hero}>
-        <Mascot mood={recallItems.length ? "search" : "wave"} size={100} />
+        <Mascot mood={recallItems.length ? "search" : "wave"} size={compactHome ? 76 : 100} />
         <View style={styles.heroText}>
           <Text selectable adjustsFontSizeToFit minimumFontScale={0.86} numberOfLines={1} style={styles.heroTitle}>
             おかえりなさい！
@@ -137,7 +138,7 @@ export default function HomeScreen() {
 
       <View style={[styles.summaryGrid, stackSummary ? styles.summaryGridStack : null]}>
         <SummaryCard title="近い期限" count={soonItems.length} icon={Clock3} tone="orange" />
-        <SummaryCard title="安全チェック" count={recallItems.length} icon={AlertTriangle} tone="red" />
+        <SummaryCard title="要確認" count={recallItems.length} icon={AlertTriangle} tone="red" />
         <SummaryCard title="完了" count={doneItems.length} icon={CheckCircle2} tone="green" />
       </View>
 
@@ -151,7 +152,7 @@ export default function HomeScreen() {
               基本セット {emergencyKit.covered.length}/{emergencyKit.total}
             </Text>
           </View>
-          <Mascot mood={emergencyKit.missing.length ? "clipboard" : "wave"} size={78} />
+          <Mascot mood={emergencyKit.missing.length ? "clipboard" : "wave"} size={compactHome ? 58 : 78} />
         </View>
         <View style={styles.kitProgressTrack}>
           <View style={[styles.kitProgressFill, { width: `${emergencyProgress}%` }]} />
@@ -255,8 +256,8 @@ const styles = StyleSheet.create({
   hero: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 12,
-    minHeight: 116,
+    gap: 10,
+    minHeight: 90,
   },
   heroText: {
     flex: 1,
@@ -264,15 +265,15 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: colors.ink,
-    fontSize: 24,
+    fontSize: 23,
     fontWeight: "900",
     letterSpacing: 0,
   },
   heroSub: {
     color: colors.ink,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
-    lineHeight: 21,
+    lineHeight: 19,
     marginTop: 5,
   },
   bellButton: {
@@ -283,9 +284,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     flexShrink: 0,
-    height: 54,
+    height: 48,
     justifyContent: "center",
-    width: 54,
+    width: 48,
   },
   bellDot: {
     backgroundColor: colors.red,
@@ -434,8 +435,8 @@ const styles = StyleSheet.create({
     borderColor: "#c5eddc",
     borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 12,
-    padding: 14,
+    gap: 10,
+    padding: 12,
   },
   kitHeader: {
     alignItems: "center",
@@ -453,10 +454,10 @@ const styles = StyleSheet.create({
   },
   kitTitle: {
     color: colors.ink,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "900",
     letterSpacing: 0,
-    lineHeight: 26,
+    lineHeight: 24,
     marginTop: 3,
   },
   kitProgressTrack: {
@@ -464,7 +465,7 @@ const styles = StyleSheet.create({
     borderColor: "#c5eddc",
     borderRadius: 999,
     borderWidth: 1,
-    height: 12,
+    height: 10,
     overflow: "hidden",
   },
   kitProgressFill: {
@@ -474,9 +475,9 @@ const styles = StyleSheet.create({
   },
   kitText: {
     color: colors.ink,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "800",
-    lineHeight: 20,
+    lineHeight: 18,
   },
   kitChipRow: {
     flexDirection: "row",

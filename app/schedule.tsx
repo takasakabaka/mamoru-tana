@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { AlertTriangle, CalendarDays, Clock3 } from "lucide-react-native";
 import { useAppState } from "@/src/app-state";
 import { addDays, daysUntil, formatShortDate } from "@/src/date";
@@ -8,6 +8,7 @@ import { EasyHome } from "@/src/easy-home";
 import { colors, radius, shadows } from "@/src/theme";
 
 export default function ScheduleScreen() {
+  const { width } = useWindowDimensions();
   const { activeItems, isEasyMode, notice, setNotice, toggleDone } = useAppState();
 
   const sortedItems = useMemo(
@@ -18,6 +19,7 @@ export default function ScheduleScreen() {
   const overdue = sortedItems.filter((item) => daysUntil(item.dueDate) < 0);
   const threeDays = sortedItems.filter((item) => daysUntil(item.dueDate) >= 0 && daysUntil(item.dueDate) <= 3);
   const twoWeeks = sortedItems.filter((item) => daysUntil(item.dueDate) >= 0 && daysUntil(item.dueDate) <= 14);
+  const stackSummary = width < 340;
 
   const dayRows = Array.from({ length: 14 }, (_, index) => {
     const date = addDays(index);
@@ -45,7 +47,7 @@ export default function ScheduleScreen() {
         </Text>
       </View>
 
-      <View style={styles.summaryGrid}>
+      <View style={[styles.summaryGrid, stackSummary ? styles.summaryGridStack : null]}>
         <SummaryCard title="期限超過" count={overdue.length} icon={AlertTriangle} tone="red" />
         <SummaryCard title="3日以内" count={threeDays.length} icon={Clock3} tone="orange" />
         <SummaryCard title="2週間" count={twoWeeks.length} icon={CalendarDays} tone="blue" />
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.ink,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "900",
     letterSpacing: 0,
   },
@@ -105,6 +107,9 @@ const styles = StyleSheet.create({
   summaryGrid: {
     flexDirection: "row",
     gap: 10,
+  },
+  summaryGridStack: {
+    flexDirection: "column",
   },
   panel: {
     ...shadows.card,

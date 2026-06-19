@@ -43,13 +43,15 @@ const toneColors: Record<Tone, { bg: string; fg: string; soft: string; border: s
 
 export function Screen({ children, contentStyle }: { children: ReactNode; contentStyle?: StyleProp<ViewStyle> }) {
   const insets = useSafeAreaInsets();
+  const topPadding = Math.max(insets.top + 18, 56);
+  const bottomPadding = Math.max(insets.bottom + 118, 136);
 
   return (
     <ScrollView
       style={styles.screen}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
-      contentContainerStyle={[styles.screenContent, { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 108 }, contentStyle]}
+      contentContainerStyle={[styles.screenContent, { paddingTop: topPadding, paddingBottom: bottomPadding }, contentStyle]}
     >
       {children}
     </ScrollView>
@@ -93,21 +95,23 @@ export function SummaryCard({
   icon: IconComponent;
   tone: Tone;
 }) {
+  const { width } = useWindowDimensions();
   const palette = toneColors[tone];
+  const compact = width < 430;
 
   return (
-    <View style={[styles.summaryCard, { backgroundColor: palette.soft, borderColor: palette.border }]}>
+    <View style={[styles.summaryCard, compact ? styles.summaryCardCompact : null, { backgroundColor: palette.soft, borderColor: palette.border }]}>
       <View style={styles.summaryTop}>
-        <View style={[styles.roundIcon, { backgroundColor: palette.bg }]}>
-          <Icon color="#fff" size={16} strokeWidth={2.6} />
+        <View style={[styles.roundIcon, compact ? styles.roundIconCompact : null, { backgroundColor: palette.bg }]}>
+          <Icon color="#fff" size={compact ? 14 : 16} strokeWidth={2.6} />
         </View>
         <Text selectable style={styles.summaryTitle} numberOfLines={1}>
           {title}
         </Text>
       </View>
-      <Text selectable style={[styles.summaryCount, { color: palette.fg }]}>
+      <Text selectable style={[styles.summaryCount, compact ? styles.summaryCountCompact : null, { color: palette.fg }]}>
         {count}
-        <Text style={styles.summaryUnit}>件</Text>
+        <Text style={[styles.summaryUnit, compact ? styles.summaryUnitCompact : null]}>件</Text>
       </Text>
     </View>
   );
@@ -123,7 +127,7 @@ export function FilterTabs({
   onChange: (id: string) => void;
 }) {
   const { width } = useWindowDimensions();
-  const narrow = width < 430;
+  const narrow = width < 340;
 
   return (
     <View style={[styles.filterWrap, narrow ? styles.filterWrapNarrow : null]}>
@@ -187,7 +191,7 @@ export function ItemRow({
   const { width } = useWindowDimensions();
   const palette = statusPalette(item);
   const Wrapper = onPress ? Pressable : View;
-  const narrow = width < 430;
+  const narrow = width < 370;
 
   return (
     <Wrapper
@@ -359,9 +363,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.page,
   },
   screenContent: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    rowGap: 16,
+    paddingLeft: 18,
+    paddingRight: 18,
+    rowGap: 14,
   },
   notice: {
     ...shadows.card,
@@ -396,7 +400,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: colors.ink,
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: "800",
   },
   summaryCard: {
@@ -404,8 +408,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     flex: 1,
-    minHeight: 118,
+    minHeight: 106,
     padding: 14,
+  },
+  summaryCardCompact: {
+    minHeight: 88,
+    padding: 11,
   },
   summaryTop: {
     alignItems: "center",
@@ -419,23 +427,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 26,
   },
+  roundIconCompact: {
+    height: 24,
+    width: 24,
+  },
   summaryTitle: {
     color: colors.ink,
     flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "800",
   },
   summaryCount: {
-    fontSize: 40,
+    fontSize: 36,
     fontWeight: "900",
     letterSpacing: 0,
-    marginTop: 16,
+    marginTop: 10,
     textAlign: "center",
+  },
+  summaryCountCompact: {
+    fontSize: 31,
+    marginTop: 8,
   },
   summaryUnit: {
     color: colors.ink,
     fontSize: 18,
     fontWeight: "800",
+  },
+  summaryUnitCompact: {
+    fontSize: 15,
   },
   filterWrap: {
     ...shadows.card,
@@ -456,9 +475,10 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: 12,
     borderWidth: 1,
-    flexBasis: 260,
+    flexBasis: 0,
     flexGrow: 1,
     flexShrink: 1,
+    minWidth: 126,
     minHeight: 42,
     justifyContent: "center",
     paddingHorizontal: 6,
@@ -510,16 +530,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     gap: 12,
-    minHeight: 84,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    minHeight: 76,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   itemRowNarrow: {
     alignItems: "flex-start",
     flexWrap: "wrap",
   },
   itemRowCompact: {
-    minHeight: 74,
+    minHeight: 68,
   },
   itemBody: {
     flex: 1,
@@ -528,7 +548,7 @@ const styles = StyleSheet.create({
   },
   itemName: {
     color: colors.ink,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "800",
   },
   itemMetaLine: {
@@ -562,8 +582,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 9,
     borderWidth: 1,
-    minHeight: 34,
-    minWidth: 70,
+    minHeight: 32,
+    minWidth: 62,
     justifyContent: "center",
     paddingHorizontal: 9,
   },
@@ -576,7 +596,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1.5,
-    minHeight: 38,
+    minHeight: 34,
     justifyContent: "center",
     paddingHorizontal: 12,
   },

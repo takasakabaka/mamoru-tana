@@ -125,62 +125,65 @@ export default function SettingsScreen() {
             </View>
           </View>
 
-          <View style={styles.premiumFeatureGrid}>
-            <View style={styles.premiumFeatureCard}>
-              <Clock3 color={isPaidPlan ? colors.blue : colors.muted} size={18} strokeWidth={2.4} />
-              <Text selectable style={styles.premiumFeatureText}>
-                前日・当日
-              </Text>
-            </View>
-            <View style={styles.premiumFeatureCard}>
-              <Repeat2 color={isPaidPlan ? colors.blue : colors.muted} size={18} strokeWidth={2.4} />
-              <Text selectable style={styles.premiumFeatureText}>
-                期限切れ後
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.hourButtonGrid}>
-            {dueReminderHourChoices.map((hour) => {
-              const selected = dueNotifications.reminderHour === hour;
-              const disabled = premiumNotificationLocked || isSyncingDueNotifications;
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled, selected }}
-                  disabled={disabled}
-                  key={hour}
-                  onPress={() => setDueNotificationHour(hour)}
-                  style={[styles.hourButton, selected ? styles.hourButtonActive : null, disabled ? styles.lockedControl : null]}
-                >
-                  <Text style={[styles.hourButtonText, selected ? styles.hourButtonTextActive : null]}>{hour}:00</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <View style={[styles.premiumSwitchRow, premiumNotificationLocked ? styles.lockedControl : null]}>
-            <View style={styles.premiumSwitchCopy}>
-              <Text selectable style={styles.premiumSwitchTitle}>
-                期限切れ後も知らせる
-              </Text>
-              <Text selectable style={styles.premiumSwitchText}>
-                期限後3日までフォローします。
-              </Text>
-            </View>
-            <Switch
-              value={isPaidPlan && dueNotifications.overdueFollowUp}
-              disabled={premiumNotificationLocked || isSyncingDueNotifications}
-              onValueChange={setDueNotificationOverdueFollowUp}
-              trackColor={{ false: colors.lineStrong, true: colors.orangeSoft }}
-              thumbColor={isPaidPlan && dueNotifications.overdueFollowUp ? colors.orange : "#fff"}
-            />
-          </View>
           {premiumNotificationLocked ? (
             <Text selectable style={styles.helpText}>
-              安心通知はPlus/Family接続後に使えます。基本通知はFreeのまま使えます。
+              Plusでは前日・当日・期限切れ後の通知と、通知時間の変更が使えます。
             </Text>
-          ) : null}
+          ) : (
+            <>
+              <View style={styles.premiumFeatureGrid}>
+                <View style={styles.premiumFeatureCard}>
+                  <Clock3 color={colors.blue} size={18} strokeWidth={2.4} />
+                  <Text selectable style={styles.premiumFeatureText}>
+                    前日・当日
+                  </Text>
+                </View>
+                <View style={styles.premiumFeatureCard}>
+                  <Repeat2 color={colors.blue} size={18} strokeWidth={2.4} />
+                  <Text selectable style={styles.premiumFeatureText}>
+                    期限切れ後
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.hourButtonGrid}>
+                {dueReminderHourChoices.map((hour) => {
+                  const selected = dueNotifications.reminderHour === hour;
+                  const disabled = isSyncingDueNotifications;
+                  return (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled, selected }}
+                      disabled={disabled}
+                      key={hour}
+                      onPress={() => setDueNotificationHour(hour)}
+                      style={[styles.hourButton, selected ? styles.hourButtonActive : null, disabled ? styles.lockedControl : null]}
+                    >
+                      <Text style={[styles.hourButtonText, selected ? styles.hourButtonTextActive : null]}>{hour}:00</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+
+              <View style={styles.premiumSwitchRow}>
+                <View style={styles.premiumSwitchCopy}>
+                  <Text selectable style={styles.premiumSwitchTitle}>
+                    期限切れ後も知らせる
+                  </Text>
+                  <Text selectable style={styles.premiumSwitchText}>
+                    期限後3日までフォローします。
+                  </Text>
+                </View>
+                <Switch
+                  value={dueNotifications.overdueFollowUp}
+                  disabled={isSyncingDueNotifications}
+                  onValueChange={setDueNotificationOverdueFollowUp}
+                  trackColor={{ false: colors.lineStrong, true: colors.orangeSoft }}
+                  thumbColor={dueNotifications.overdueFollowUp ? colors.orange : "#fff"}
+                />
+              </View>
+            </>
+          )}
         </View>
       </View>
 
@@ -259,7 +262,7 @@ export default function SettingsScreen() {
           プライバシーとストア申告
         </Text>
         <Text selectable style={styles.noteText}>
-          現在は外部送信なし、アカウントなし、カメラ・位置情報なし、端末内保存のみです。バーコード読み取りや家族同期を追加する場合は、App Storeのプライバシー情報とGoogle PlayのData safety申告を更新してください。
+          現在は端末内保存のみです。同期・カメラ・位置情報を追加したら、ストア申告も更新します。
         </Text>
       </View>
 
@@ -268,7 +271,7 @@ export default function SettingsScreen() {
           無料公開モード
         </Text>
         <Text selectable style={styles.noteText}>
-          決済はまだ接続していないため、Plus/Familyは有効化できません。App Store / Google Playの商品作成後にアプリ内課金へ接続します。
+          決済接続まではFreeで動きます。商品作成後にPlus/Familyを有効化します。
         </Text>
       </View>
     </Screen>
@@ -334,7 +337,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.ink,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "900",
     letterSpacing: 0,
   },
@@ -351,17 +354,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     flexDirection: "row",
-    gap: 13,
-    minHeight: 94,
-    padding: 16,
+    gap: 12,
+    minHeight: 78,
+    padding: 13,
   },
   currentIcon: {
     alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: 16,
-    height: 54,
+    height: 48,
     justifyContent: "center",
-    width: 54,
+    width: 48,
   },
   currentBody: {
     flex: 1,
@@ -369,7 +372,7 @@ const styles = StyleSheet.create({
   },
   currentTitle: {
     color: colors.ink,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "900",
   },
   currentMeta: {
@@ -395,8 +398,8 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
-    gap: 14,
-    padding: 14,
+    gap: 12,
+    padding: 12,
   },
   notificationRow: {
     alignItems: "center",
@@ -405,17 +408,17 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: 1,
     flexDirection: "row",
-    gap: 13,
-    minHeight: 88,
-    padding: 14,
+    gap: 11,
+    minHeight: 80,
+    padding: 12,
   },
   notificationIcon: {
     alignItems: "center",
     backgroundColor: colors.surface,
     borderRadius: 15,
-    height: 50,
+    height: 46,
     justifyContent: "center",
-    width: 50,
+    width: 46,
   },
   notificationCopy: {
     flex: 1,
@@ -439,8 +442,8 @@ const styles = StyleSheet.create({
     borderColor: colors.lineStrong,
     borderRadius: radius.md,
     borderWidth: 1,
-    gap: 12,
-    padding: 14,
+    gap: 10,
+    padding: 12,
   },
   premiumNotificationBoxActive: {
     backgroundColor: colors.orangeSoft,
@@ -611,8 +614,8 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.md,
     borderWidth: 1,
-    gap: 12,
-    padding: 14,
+    gap: 10,
+    padding: 12,
   },
   planCardActive: {
     backgroundColor: colors.blueSoft,
@@ -677,9 +680,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     gap: 7,
-    minHeight: 104,
+    minHeight: 92,
     minWidth: "46%",
-    padding: 14,
+    padding: 12,
   },
   featureCardActive: {
     backgroundColor: colors.blueSoft,
@@ -715,7 +718,7 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: 16,
+    padding: 13,
   },
   noteTitle: {
     color: colors.ink,
